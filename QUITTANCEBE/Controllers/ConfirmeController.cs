@@ -112,7 +112,7 @@ namespace QUITTANCEBE.Controllers
                 return Ok(oTransQuit);
             }
 
-            if (P == 1) // Confirmer via SATIM (via le middleware)
+            if (P == 1) // Confirmer via le middleware de paiement
             {
                 string middlewareUrl = _config.GetValue<string>("MiddlewareSettings:BaseUrl");
 
@@ -156,8 +156,6 @@ namespace QUITTANCEBE.Controllers
                     oTransQuitErr.Num_imm = Num_imm;
                     return Ok(oTransQuitErr);
                 }
-
-                string NIN = result.respCodeDesc ?? NIN0;
 
                 if (result.PaymentAccepted)
                 {

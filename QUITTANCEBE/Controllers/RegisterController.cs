@@ -49,12 +49,12 @@ namespace QUITTANCEBE.Controllers
             string OrderNumber = GetNewOrderNumber();
             oTabOrderNumber.OrderNumber = OrderNumber;
 
-            if (P == 1) // Payer via SATIM (via le middleware)
+            if (P == 1) // Payer via le middleware de paiement
             {
                 string middlewareUrl = _config.GetValue<string>("MiddlewareSettings:BaseUrl");
                 string RIT = _config.GetValue<string>("AppSettings:RIT");
-                string returnUrl = _config.GetValue<string>("SatimSettings:returnUrl") + "?lang=" + lang + "&idsession=" + Id.ToString().ToLower();
-                string failUrl = _config.GetValue<string>("SatimSettings:failUrl") + "?lang=" + lang + "&idsession=" + Id.ToString().ToLower();
+                string returnUrl = _config.GetValue<string>("MiddlewareSettings:ReturnUrl") + "?lang=" + lang + "&idsession=" + Id.ToString().ToLower();
+                string failUrl = _config.GetValue<string>("MiddlewareSettings:FailUrl") + "?lang=" + lang + "&idsession=" + Id.ToString().ToLower();
 
                 var registerReq = new MiddlewareRegisterRequest
                 {
@@ -94,14 +94,14 @@ namespace QUITTANCEBE.Controllers
                 _context.Update(oTabOrderNumber);
                 _context.SaveChanges();
 
-                // On renvoie la même structure que SATIM pour que le frontend ne change pas
-                var satimLikeResponse = new
+                // On renvoie une structure générique pour que le frontend ne change pas
+                var paymentResponse = new
                 {
                     errorCode = result.ErrorCode,
                     orderId = result.OrderId,
                     formUrl = result.FormUrl
                 };
-                return Ok(JsonConvert.SerializeObject(satimLikeResponse));
+                return Ok(JsonConvert.SerializeObject(paymentResponse));
             }
             else  // Payer via Algerie Poste (reste direct, inchangé)
             {
